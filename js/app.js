@@ -108,10 +108,91 @@ function addMarkers() {
   });
 }
 
-// Toggle sidebar list
-function toggleList() {
+// Show records with GPS coordinates
+function showWithGpsRecords() {
   const sidebar = document.getElementById('sidebar');
-  sidebar.classList.toggle('active');
+  const list = document.getElementById('sidebar-list');
+  const countText = document.getElementById('count-text');
+  const filterSelect = document.getElementById('filter-estado');
+
+  // Reset status filter
+  if (filterSelect) filterSelect.value = '';
+
+  // Set GPS filter mode
+  sidebar.dataset.gpsFilter = 'yes';
+
+  // Clear filtered state
+  delete sidebar.dataset.filtered;
+
+  // Reset buttons
+  document.getElementById('btn-no-gps').style.background = '';
+  document.getElementById('btn-no-gps').style.color = '';
+
+  // Get records with GPS
+  const withGpsRecords = missingPersonsData.filter(item => item.gps);
+
+  // Update list
+  list.innerHTML = withGpsRecords.slice(0, 100).map((item, index) => `
+    <div class="sidebar-card" onclick="openDetail(${missingPersonsData.indexOf(item)})">
+      <div class="sidebar-card-name">${escapeHtml(item.name)}</div>
+      <div class="sidebar-card-location">📍 ${escapeHtml(item.location)}</div>
+      ${item.gps ? `<div class="sidebar-card-gps">📌 ${item.gps}</div>` : ''}
+    </div>
+  `).join('');
+
+  countText.textContent = `${withGpsRecords.length} registros con GPS`;
+  sidebar.classList.add('active');
+}
+
+// Close sidebar
+function closeSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  sidebar.classList.remove('active');
+
+  // Reset button styles
+  document.getElementById('btn-no-gps').style.background = '';
+  document.getElementById('btn-no-gps').style.color = '';
+
+  // Clear filtered state
+  delete sidebar.dataset.filtered;
+  delete sidebar.dataset.gpsFilter;
+}
+
+// Show records without GPS coordinates
+function showNoGpsRecords() {
+  const sidebar = document.getElementById('sidebar');
+  const list = document.getElementById('sidebar-list');
+  const countText = document.getElementById('count-text');
+  const filterSelect = document.getElementById('filter-estado');
+
+  // Reset status filter
+  if (filterSelect) filterSelect.value = '';
+
+  // Set GPS filter mode
+  sidebar.dataset.gpsFilter = 'no';
+
+  // Mark sidebar as filtered
+  sidebar.dataset.filtered = 'no-gps';
+
+  // Get records without GPS
+  const noGpsRecords = missingPersonsData.filter(item => !item.gps);
+
+  // Update list
+  list.innerHTML = noGpsRecords.slice(0, 100).map((item, index) => `
+    <div class="sidebar-card" onclick="openDetail(${missingPersonsData.indexOf(item)})">
+      <div class="sidebar-card-name">${escapeHtml(item.name)}</div>
+      <div class="sidebar-card-location">📍 ${escapeHtml(item.location)}</div>
+      <div class="sidebar-card-gps" style="color: #ef4444;">⚠️ Sin coordenadas GPS</div>
+    </div>
+  `).join('');
+
+  countText.textContent = `${noGpsRecords.length} registros sin GPS`;
+  sidebar.classList.add('active');
+
+  // Update button style
+  const btn = document.getElementById('btn-no-gps');
+  btn.style.background = 'var(--accent-orange)';
+  btn.style.color = 'white';
 }
 
 // Search markers
@@ -227,8 +308,12 @@ function openDetail(index) {
 
 // Render sidebar list
 function renderSidebarList() {
+  const sidebar = document.getElementById('sidebar');
   const list = document.getElementById('sidebar-list');
   const countText = document.getElementById('count-text');
+
+  // Clear GPS filter mode
+  delete sidebar.dataset.gpsFilter;
 
   const items = missingPersonsData.slice(0, 100);
 
@@ -243,25 +328,45 @@ function renderSidebarList() {
   countText.textContent = `${items.length} registros`;
 }
 
-// Filter sidebar list
+// Filter sidebar list by status
 function filterSidebarList() {
+  const sidebar = document.getElementById('sidebar');
   const status = document.getElementById('filter-estado').value;
   const list = document.getElementById('sidebar-list');
+  const countText = document.getElementById('count-text');
 
+  // Determine base dataset based on GPS filter mode
   let items = missingPersonsData;
+  const gpsFilter = sidebar.dataset.gpsFilter;
+
+  if (gpsFilter === 'yes') {
+    items = items.filter(i => i.gps);
+  } else if (gpsFilter === 'no') {
+    items = items.filter(i => !i.gps);
+  }
+
+  // Apply status filter
   if (status) {
     items = items.filter(i => i.status === status);
   }
 
+  // Update list
   list.innerHTML = items.slice(0, 100).map((item, index) => `
     <div class="sidebar-card" onclick="openDetail(${missingPersonsData.indexOf(item)})">
       <div class="sidebar-card-name">${escapeHtml(item.name)}</div>
       <div class="sidebar-card-location">📍 ${escapeHtml(item.location)}</div>
-      ${item.gps ? `<div class="sidebar-card-gps">📌 ${item.gps}</div>` : ''}
+      ${item.gps ? `<div class="sidebar-card-gps">📌 ${item.gps}</div>` : '<div class="sidebar-card-gps" style="color: #ef4444;">⚠️ Sin GPS</div>'}
     </div>
   `).join('');
 
-  document.getElementById('count-text').textContent = `${items.length} registros`;
+  // Update count
+  if (gpsFilter === 'yes') {
+    countText.textContent = `${items.length} registros con GPS`;
+  } else if (gpsFilter === 'no') {
+    countText.textContent = `${items.length} registros sin GPS`;
+  } else {
+    countText.textContent = `${items.length} registros`;
+  }
 }
 
 // Setup event listeners

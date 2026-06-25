@@ -13,6 +13,7 @@
 <div class="source-notice">
   <span>📢 Los datos de este sitio provienen de </span>
   <a href="https://venezuelatebusca.com/" target="_blank" rel="noopener">venezuelatebusca.com</a>
+  <span class="source-time"> · Datos recopilados: 2026.6.25 14:00 UTC</span>
 </div>
 
 <!-- HEADER -->
@@ -37,7 +38,8 @@
       </div>
     </div>
     <div class="header-actions">
-      <button class="btn-secondary" onclick="toggleList()">📋 Lista</button>
+      <button class="btn-secondary" id="btn-no-gps" onclick="showNoGpsRecords()">📍 Sin GPS</button>
+      <button class="btn-secondary" onclick="showWithGpsRecords()">📋 Con GPS</button>
     </div>
   </div>
 </header>
@@ -71,7 +73,7 @@
   <div class="sidebar-header">
     <h2>Personas registradas</h2>
     <span id="count-text" class="count-badge">0 registros</span>
-    <button class="sidebar-close" onclick="toggleList()">✕</button>
+    <button class="sidebar-close" onclick="closeSidebar()">✕</button>
   </div>
   <div class="sidebar-filters">
     <select class="filter-select" id="filter-estado" onchange="filterSidebarList()">

@@ -47,6 +47,11 @@ body {
   font-weight: 600;
 }
 
+.source-notice .source-time {
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
 .source-notice a:hover {
   color: #fff;
 }
