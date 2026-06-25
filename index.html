@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Venezuela Te Busca — Registro de desaparecidos</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- SOURCE NOTICE -->
+<div class="source-notice">
+  <span>📢 Los datos de este sitio provienen de </span>
+  <a href="https://venezuelatebusca.com/" target="_blank" rel="noopener">venezuelatebusca.com</a>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <a href="https://venezuelatebusca.com/" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">Venezuela Te Busca <span>🇻🇪</span></a>
+      <small>Terremoto 2026</small>
+    </div>
+    <div class="header-stats">
+      <div class="header-stat">
+        <span class="header-stat-num" id="stat-total">—</span>
+        <span class="header-stat-label">Registrados</span>
+      </div>
+      <div class="header-stat">
+        <span class="header-stat-num missing" id="stat-missing">—</span>
+        <span class="header-stat-label">Buscados</span>
+      </div>
+      <div class="header-stat">
+        <span class="header-stat-num found" id="stat-found">—</span>
+        <span class="header-stat-label">Encontrados</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-secondary" onclick="toggleList()">📋 Lista</button>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN CONTENT - MAP -->
+<div class="main-container">
+  <div id="map"></div>
+
+  <!-- LEGEND -->
+  <div class="map-legend">
+    <div class="map-legend-title">Leyenda</div>
+    <div class="map-legend-item">
+      <div class="legend-dot missing"></div>
+      <span>Buscados</span>
+    </div>
+    <div class="map-legend-item">
+      <div class="legend-dot found"></div>
+      <span>Encontrados</span>
+    </div>
+  </div>
+
+  <!-- SEARCH OVERLAY -->
+  <div class="search-overlay">
+    <input class="search-input" type="text" id="search-input" placeholder="Buscar por nombre..." oninput="searchMarkers()">
+    <div id="search-results" class="search-results"></div>
+  </div>
+</div>
+
+<!-- SIDEBAR - PERSON LIST -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h2>Personas registradas</h2>
+    <span id="count-text" class="count-badge">0 registros</span>
+    <button class="sidebar-close" onclick="toggleList()">✕</button>
+  </div>
+  <div class="sidebar-filters">
+    <select class="filter-select" id="filter-estado" onchange="filterSidebarList()">
+      <option value="">Todos</option>
+      <option value="desaparecido">Buscados</option>
+      <option value="encontrado">Encontrados</option>
+    </select>
+  </div>
+  <div class="sidebar-list" id="sidebar-list">
+    <div class="loading">Cargando...</div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="modal-detalle">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="detail-title">—</div>
+        <div class="modal-subtitle" id="detail-subtitle">—</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal-detalle')">✕</button>
+    </div>
+    <div id="detail-photo" class="detail-photo">👤</div>
+    <div class="detail-body">
+      <div class="detail-name" id="detail-name"></div>
+      <div id="detail-status-badge"></div>
+      <div class="detail-grid" id="detail-grid"></div>
+      <div id="detail-gps-block"></div>
+      <div class="detail-section-title">Reportado por</div>
+      <div class="contact-box" id="detail-contact"></div>
+      <div class="detail-actions">
+        <a href="#" id="detail-maps-link" target="_blank" class="btn-primary">📍 Ver en Google Maps</a>
+        <button class="btn-secondary" onclick="closeModal('modal-detalle')">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- FOOTER -->
+<footer class="map-footer">
+  <p>Venezuela Te Busca · Iniciativa solidaria · Terremoto 2026</p>
+  <p>Emergencias: <strong>911</strong> · <strong>112</strong> · <strong>*1</strong> · <strong>171</strong></p>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
