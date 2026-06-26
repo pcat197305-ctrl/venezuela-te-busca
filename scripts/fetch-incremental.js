@@ -11,7 +11,7 @@ const API_URL = 'https://venezuelatebusca.com/api/persons';
 const DATA_FILE = path.join(__dirname, '..', 'js', 'data.js');
 const STATE_FILE = path.join(__dirname, '..', 'data', 'fetch_state.json');
 
-function fetch(url) {
+function fetch(url, retries = 3, delay = 2000) {
   return new Promise((resolve, reject) => {
     https.get(url, (res) => {
       let data = '';
@@ -22,7 +22,16 @@ function fetch(url) {
         const nextUrl = nextMatch ? nextMatch[1] : null;
         resolve({ data: JSON.parse(data), nextUrl });
       });
-    }).on('error', reject);
+    }).on('error', (err) => {
+      if (retries > 0) {
+        console.log(`  网络错误，等待 ${delay/1000}s 后重试... (剩余 ${retries} 次)`);
+        setTimeout(() => {
+          fetch(url, retries - 1, delay).then(resolve).catch(reject);
+        }, delay);
+      } else {
+        reject(err);
+      }
+    });
   });
 }
 
