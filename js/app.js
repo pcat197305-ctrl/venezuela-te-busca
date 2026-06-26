@@ -16,6 +16,7 @@ setInterval(() => {
 // ==================== App Code ====================
 var map = null;
 var markers = [];
+var markerCluster = null;
 var mapInitialized = false;
 var selectedItem = null;
 
@@ -39,6 +40,38 @@ function initMap() {
     attribution: '© OpenStreetMap contributors'
   }).addTo(map);
 
+  // Initialize marker cluster group
+  markerCluster = L.markerClusterGroup({
+    maxClusterRadius: 50,
+    spiderfyOnMaxZoom: true,
+    showCoverageOnHover: false,
+    zoomToBoundsOnClick: true,
+    iconCreateFunction: function(cluster) {
+      var count = cluster.getChildCount();
+      var markers = cluster.getAllChildMarkers();
+      var missing = 0;
+      var found = 0;
+      markers.forEach(function(m) {
+        if (m.options.itemData && m.options.itemData.status === 'encontrado') {
+          found++;
+        } else {
+          missing++;
+        }
+      });
+
+      var color = missing > found ? '#f97316' : '#22c55e';
+      var size = count < 10 ? 'small' : (count < 100 ? 'medium' : 'large');
+
+      return L.divIcon({
+        html: '<div style="background:' + color + '; width:36px; height:36px; border-radius:50%; border:3px solid #fff; box-shadow:0 2px 6px rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:12px;">' + count + '</div>',
+        className: 'marker-cluster marker-cluster-' + size,
+        iconSize: L.point(36, 36)
+      });
+    }
+  });
+
+  map.addLayer(markerCluster);
+
   // Add markers
   addMarkers();
 
@@ -59,23 +92,10 @@ function updateStats() {
 // Add markers to map
 function addMarkers() {
   // Clear existing markers
-  markers.forEach(m => map.removeLayer(m));
+  if (markerCluster) {
+    markerCluster.clearLayers();
+  }
   markers = [];
-
-  // Custom icons
-  const orangeIcon = L.divIcon({
-    className: 'custom-marker',
-    html: '<div style="background:#f97316; width:24px; height:24px; border-radius:50%; border:3px solid #fff; box-shadow:0 2px 6px rgba(0,0,0,0.4);"></div>',
-    iconSize: [24, 24],
-    iconAnchor: [12, 12]
-  });
-
-  const greenIcon = L.divIcon({
-    className: 'custom-marker',
-    html: '<div style="background:#22c55e; width:24px; height:24px; border-radius:50%; border:3px solid #fff; box-shadow:0 2px 6px rgba(0,0,0,0.4);"></div>',
-    iconSize: [24, 24],
-    iconAnchor: [12, 12]
-  });
 
   const itemsWithGps = missingPersonsData.filter(item => item.gps);
 
@@ -85,12 +105,11 @@ function addMarkers() {
     const [lat, lng] = item.gps.split(',').map(s => parseFloat(s.trim()));
     if (isNaN(lat) || isNaN(lng)) return;
 
-    const icon = item.status === 'encontrado' ? greenIcon : orangeIcon;
     const statusColor = item.status === 'encontrado' ? '#22c55e' : '#f97316';
     const statusText = item.status === 'encontrado' ? '✓ Encontrado' : '🔴 Se busca';
     const globalIndex = missingPersonsData.indexOf(item);
 
-    const marker = L.marker([lat, lng], { icon: icon });
+    const marker = L.marker([lat, lng], { itemData: item });
 
     const popupContent = `
       <div style="min-width:220px; font-family:sans-serif; padding:8px;">
@@ -103,7 +122,7 @@ function addMarkers() {
     `;
 
     marker.bindPopup(popupContent);
-    marker.addTo(map);
+    markerCluster.addLayer(marker);
     markers.push(marker);
   });
 }
@@ -230,15 +249,29 @@ function focusMarker(index) {
   if (!item || !item.gps) return;
 
   const [lat, lng] = item.gps.split(',').map(s => parseFloat(s.trim()));
-  map.setView([lat, lng], 14);
 
-  // Find and open the marker popup
-  markers.forEach((marker, i) => {
-    const markerLatLng = marker.getLatLng();
-    if (Math.abs(markerLatLng.lat - lat) < 0.0001 && Math.abs(markerLatLng.lng - lng) < 0.0001) {
-      marker.openPopup();
+  // Check if item is in a cluster
+  var foundLayer = null;
+  markerCluster.getLayers().forEach(function(layer) {
+    var layerLatLng = layer.getLatLng();
+    if (Math.abs(layerLatLng.lat - lat) < 0.0001 && Math.abs(layerLatLng.lng - lng) < 0.0001) {
+      foundLayer = layer;
     }
   });
+
+  if (foundLayer) {
+    // Check if it's in a cluster
+    var clusters = markerCluster.getClustersLatLngs([lat, lng], 100);
+    if (clusters.length > 0) {
+      // Zoom into the cluster to spiderfy
+      map.setView([lat, lng], 16);
+    } else {
+      map.setView([lat, lng], 14);
+      foundLayer.openPopup();
+    }
+  } else {
+    map.setView([lat, lng], 14);
+  }
 
   document.getElementById('search-results').classList.remove('active');
   document.getElementById('search-input').value = '';
