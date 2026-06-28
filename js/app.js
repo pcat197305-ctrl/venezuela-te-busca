@@ -19,6 +19,7 @@ var markers = [];
 var markerCluster = null;
 var mapInitialized = false;
 var selectedItem = null;
+var missingPersonsData = typeof MISSING_PERSONS_DATA !== 'undefined' ? MISSING_PERSONS_DATA : [];
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -52,7 +53,7 @@ function initMap() {
       var missing = 0;
       var found = 0;
       markers.forEach(function(m) {
-        if (m.options.itemData && m.options.itemData.status === 'encontrado') {
+        if (m.options.itemData && (m.options.itemData.status === 'found' || m.options.itemData.status === 'encontrado')) {
           found++;
         } else {
           missing++;
@@ -80,11 +81,11 @@ function initMap() {
 
 // Update header stats
 function updateStats() {
-  const total = missingPersonsData.length;
-  const missing = missingPersonsData.filter(i => i.status !== 'encontrado').length;
-  const found = missingPersonsData.filter(i => i.status === 'encontrado').length;
+  if (typeof MISSING_PERSONS_DATA === 'undefined') return;
+  const missing = MISSING_PERSONS_DATA.filter(i => i.status === 'missing').length;
+  const found = MISSING_PERSONS_DATA.filter(i => i.status === 'found' || i.status === 'encontrado').length;
 
-  document.getElementById('stat-total').textContent = total.toLocaleString();
+  document.getElementById('stat-total').textContent = MISSING_PERSONS_DATA.length.toLocaleString();
   document.getElementById('stat-missing').textContent = missing.toLocaleString();
   document.getElementById('stat-found').textContent = found.toLocaleString();
 }
