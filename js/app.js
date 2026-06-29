@@ -330,7 +330,7 @@ function openDetail(index) {
   if (item.gps) {
     gpsBlock.innerHTML = `
       <div class="detail-item" style="grid-column: 1 / -1; background: rgba(249, 115, 22, 0.15); border: 1px solid var(--accent-orange);">
-        <div class="detail-item-label">📍 GPS坐标</div>
+        <div class="detail-item-label">📍 Coordenadas GPS</div>
         <div class="detail-item-value">
           <a href="https://www.google.com/maps?q=${encodeURIComponent(item.gps)}" target="_blank" style="color: var(--accent-orange);">
             ${item.gps} ↗
