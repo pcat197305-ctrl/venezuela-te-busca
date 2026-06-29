@@ -82,7 +82,8 @@ function initMap() {
 // Update header stats
 function updateStats() {
   if (typeof MISSING_PERSONS_DATA === 'undefined') return;
-  const missing = MISSING_PERSONS_DATA.filter(i => i.status === 'missing').length;
+  // disappeared/desaparecido = Buscados, encontrado/found = Encontrados
+  const missing = MISSING_PERSONS_DATA.filter(i => i.status === 'missing' || i.status === 'desaparecido').length;
   const found = MISSING_PERSONS_DATA.filter(i => i.status === 'found' || i.status === 'encontrado').length;
 
   document.getElementById('stat-total').textContent = MISSING_PERSONS_DATA.length.toLocaleString();
