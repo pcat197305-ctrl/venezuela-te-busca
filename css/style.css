@@ -786,7 +786,7 @@ footer a {
 /* MAIN CONTAINER */
 .main-container {
   position: relative;
-  height: calc(100vh - 140px);
+  height: calc(100vh - 225px);
 }
 
 #map {
@@ -840,6 +840,69 @@ footer a {
 
 .legend-dot.found {
   background: var(--accent-green);
+}
+
+/* EXCLUDED TABLE */
+.excluded-table {
+  position: absolute;
+  bottom: 4rem;
+  left: 1rem;
+  background: var(--bg-card);
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+  z-index: 1000;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow);
+  max-height: none;
+}
+
+.excluded-table-title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-size: 0.7rem;
+}
+
+.excluded-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.excluded-table th,
+.excluded-table td {
+  padding: 0.35rem 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.excluded-table th {
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 0.7rem;
+}
+
+.excluded-table td:last-child {
+  text-align: right;
+  color: var(--accent-orange);
+  font-weight: 600;
+}
+
+.excluded-table tfoot td {
+  border-bottom: none;
+  border-top: 1px solid var(--border-color);
+  font-weight: 600;
+  color: var(--accent-orange);
+}
+
+.excluded-table-note {
+  margin-top: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-color);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-style: italic;
 }
 
 /* SEARCH OVERLAY */

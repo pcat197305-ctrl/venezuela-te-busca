@@ -21,6 +21,9 @@ var mapInitialized = false;
 var selectedItem = null;
 var missingPersonsData = typeof MISSING_PERSONS_DATA !== 'undefined' ? MISSING_PERSONS_DATA : [];
 
+// IDs to exclude from map (state-level or no-location records)
+var mapExcludeIds = typeof MAP_EXCLUDE_IDS !== 'undefined' ? new Set(MAP_EXCLUDE_IDS) : new Set();
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
   initMap();
@@ -99,7 +102,8 @@ function addMarkers() {
   }
   markers = [];
 
-  const itemsWithGps = missingPersonsData.filter(item => item.gps);
+  // Filter: only show records with GPS that are not in exclude list
+  const itemsWithGps = missingPersonsData.filter(item => item.gps && !mapExcludeIds.has(item.id));
 
   // Create custom icon function for individual markers
   function createMarkerIcon(status) {

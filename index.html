@@ -63,6 +63,31 @@
     </div>
   </div>
 
+  <!-- Excluded locations table -->
+  <div class="excluded-table">
+    <div class="excluded-table-title">Ubicaciones sin GPS en mapa</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Ubicación</th>
+          <th>Cantidad</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>la guaira</td><td>6,532</td></tr>
+        <tr><td>la guaira (ultima vez)</td><td>4,747</td></tr>
+        <tr><td>guaira</td><td>561</td></tr>
+        <tr><td>caracas</td><td>439</td></tr>
+        <tr><td>caracas (ultima vez)</td><td>301</td></tr>
+        <tr><td>Otros</td><td>5,672</td></tr>
+      </tbody>
+      <tfoot>
+        <tr><td>Total</td><td>18,252</td></tr>
+      </tfoot>
+    </table>
+    <div class="excluded-table-note">Registros sin coordenadas GPS válidas en el mapa</div>
+  </div>
+
   <!-- SEARCH OVERLAY -->
   <div class="search-overlay">
     <input class="search-input" type="text" id="search-input" placeholder="Buscar por nombre..." oninput="searchMarkers()">
@@ -126,6 +151,7 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+<script src="js/map_exclude.js"></script>
 <script src="js/data.js"></script>
 <script src="js/app.js"></script>
 
