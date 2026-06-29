@@ -100,6 +100,21 @@ function addMarkers() {
 
   const itemsWithGps = missingPersonsData.filter(item => item.gps);
 
+  // Create custom icon function for individual markers
+  function createMarkerIcon(status) {
+    const isFound = status === 'encontrado' || status === 'found';
+    const color = isFound ? '#22c55e' : '#f97316';
+    const emoji = isFound ? '✓' : '🔴';
+
+    return L.divIcon({
+      html: `<div style="background:${color}; width:24px; height:24px; border-radius:50%; border:2px solid #fff; box-shadow:0 2px 4px rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; color:white; font-size:12px; font-weight:bold;">${emoji}</div>`,
+      className: 'custom-marker',
+      iconSize: [24, 24],
+      iconAnchor: [12, 12],
+      popupAnchor: [0, -12]
+    });
+  }
+
   itemsWithGps.forEach((item, index) => {
     if (!item.gps) return;
 
@@ -110,7 +125,10 @@ function addMarkers() {
     const statusText = item.status === 'encontrado' ? '✓ Encontrado' : '🔴 Se busca';
     const globalIndex = missingPersonsData.indexOf(item);
 
-    const marker = L.marker([lat, lng], { itemData: item });
+    const marker = L.marker([lat, lng], {
+      itemData: item,
+      icon: createMarkerIcon(item.status)
+    });
 
     const popupContent = `
       <div style="min-width:220px; font-family:sans-serif; padding:8px;">
